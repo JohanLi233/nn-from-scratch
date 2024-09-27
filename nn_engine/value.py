@@ -1,3 +1,4 @@
+import math
 from graphviz import Digraph
 
 class Value:
@@ -9,6 +10,23 @@ class Value:
         self._prev = set(_children)
         self._op = _op 
         self.label = label
+
+    def relu(self):
+        out = Value(max(0, self.data), (self,),'relu')
+        
+        def _backward():
+            self.grad += (self.data > 0) * out.grad
+        out._backward = _backward
+        return out
+
+    def sigmoid(self):
+        sig = 1 / (1 + math.exp(-self.data))
+        out = Value(sig, (self,), 'sigmoid')
+
+        def _backward():
+            self.grad += sig * (1 - sig) * out.grad
+        out._backward = _backward
+        return out
     
     def backward(self):
         topology = []
