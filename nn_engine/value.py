@@ -27,6 +27,22 @@ class Value:
             self.grad += sig * (1 - sig) * out.grad
         out._backward = _backward
         return out
+
+    def exp(self):
+        out = Value(math.exp(self.data), (self,), 'exp')
+
+        def _backward():
+            self.grad += out.data * out.grad
+        out._backward = _backward
+        return out
+
+    def log(self):
+        out = Value(math.log(self.data), (self,), 'log')
+
+        def _backward():
+            self.grad += (1 / self.data) * out.grad
+        out._backward = _backward
+        return out
     
     def backward(self):
         topology = []
